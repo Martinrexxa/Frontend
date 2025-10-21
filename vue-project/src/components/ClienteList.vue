@@ -62,17 +62,18 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 
+// ⚡ Definición de tipo para clientes
 interface Cliente {
   id_cliente: number;
   nombre: string;
   apellido: string;
   email: string;
-  telefono: string;
+  telefono?: string;
 }
 
 // Variables reactivas
 const clientes = ref<Cliente[]>([]);
-const cliente = ref<Partial<Cliente>>({
+const cliente = ref<Omit<Cliente, "id_cliente">>({
   nombre: "",
   apellido: "",
   email: "",
@@ -81,26 +82,28 @@ const cliente = ref<Partial<Cliente>>({
 const loading = ref(true);
 const error = ref("");
 
-// ⚙️ Cambia esta URL por tu backend en Vercel
-const API_URL = "https://TU_BACKEND_EN_VERCEL.vercel.app/";
+// 🔗 URL del backend desplegado en Vercel
+const API_URL = "https://TU_BACKEND_EN_VERCEL.vercel.app/pablo";
 
 // Función para obtener clientes
-const obtenerClientes = async () => {
+const obtenerClientes = async (): Promise<void> => {
   loading.value = true;
   error.value = "";
   try {
     const res = await fetch(API_URL);
     if (!res.ok) throw new Error("Error al obtener clientes");
-    clientes.value = await res.json();
-  } catch (err: any) {
-    error.value = err.message;
+    const data: Cliente[] = await res.json();
+    clientes.value = data;
+  } catch (err: unknown) {
+    if (err instanceof Error) error.value = err.message;
+    else error.value = String(err);
   } finally {
     loading.value = false;
   }
 };
 
-// Función para registrar un cliente
-const registrarCliente = async () => {
+// Función para registrar cliente
+const registrarCliente = async (): Promise<void> => {
   try {
     const res = await fetch(API_URL, {
       method: "POST",
@@ -110,13 +113,14 @@ const registrarCliente = async () => {
     if (!res.ok) throw new Error("Error al registrar cliente");
     alert("✅ Cliente registrado con éxito");
     cliente.value = { nombre: "", apellido: "", email: "", telefono: "" };
-    await obtenerClientes(); // actualiza la tabla automáticamente
-  } catch (err: any) {
-    alert(err.message);
+    await obtenerClientes(); // refresca la tabla
+  } catch (err: unknown) {
+    if (err instanceof Error) alert(err.message);
+    else alert(String(err));
   }
 };
 
-// Cargar clientes al montar
+// Cargar clientes al montar el componente
 onMounted(() => {
   obtenerClientes();
 });
