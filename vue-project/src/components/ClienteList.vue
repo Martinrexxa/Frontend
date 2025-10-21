@@ -1,8 +1,36 @@
 <template>
-  <div>
-    <h2>📋 Lista de Clientes</h2>
+  <div class="container">
+    <h1>📋 Clientes</h1>
 
-    <!-- Mensaje de carga -->
+    <!-- FORMULARIO -->
+    <form @submit.prevent="registrarCliente">
+      <div class="input-group">
+        <label>Nombre:</label>
+        <input v-model="cliente.nombre" type="text" required />
+      </div>
+
+      <div class="input-group">
+        <label>Apellido:</label>
+        <input v-model="cliente.apellido" type="text" required />
+      </div>
+
+      <div class="input-group">
+        <label>Email:</label>
+        <input v-model="cliente.email" type="email" required />
+      </div>
+
+      <div class="input-group">
+        <label>Teléfono:</label>
+        <input v-model="cliente.telefono" type="text" />
+      </div>
+
+      <button type="submit">Registrar Cliente</button>
+    </form>
+
+    <hr />
+
+    <!-- LISTA DE CLIENTES -->
+    <h2>Clientes Registrados</h2>
     <p v-if="loading">Cargando clientes...</p>
     <p v-if="error" style="color:red">{{ error }}</p>
 
@@ -11,18 +39,18 @@
         <tr>
           <th>ID</th>
           <th>Nombre</th>
+          <th>Apellido</th>
+          <th>Email</th>
           <th>Teléfono</th>
-          <th>Correo</th>
-          <th>Dirección</th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="cliente in clientes" :key="cliente.id_cliente">
-          <td>{{ cliente.id_cliente }}</td>
-          <td>{{ cliente.nombre }}</td>
-          <td>{{ cliente.telefono }}</td>
-          <td>{{ cliente.correo }}</td>
-          <td>{{ cliente.direccion }}</td>
+        <tr v-for="c in clientes" :key="c.id_cliente">
+          <td>{{ c.id_cliente }}</td>
+          <td>{{ c.nombre }}</td>
+          <td>{{ c.apellido }}</td>
+          <td>{{ c.email }}</td>
+          <td>{{ c.telefono }}</td>
         </tr>
       </tbody>
     </table>
@@ -34,26 +62,32 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 
-// 🔹 Interfaz de tipo Cliente
 interface Cliente {
   id_cliente: number;
   nombre: string;
+  apellido: string;
+  email: string;
   telefono: string;
-  correo: string;
-  direccion: string;
 }
 
-// 🔹 Variables reactivas
+// Variables reactivas
 const clientes = ref<Cliente[]>([]);
+const cliente = ref<Partial<Cliente>>({
+  nombre: "",
+  apellido: "",
+  email: "",
+  telefono: ""
+});
 const loading = ref(true);
 const error = ref("");
 
-// 🔹 URL de tu backend (ajústala si estás en Vercel)
-const API_URL = "https://TU_BACKEND.vercel.app/pablo"; 
-// Ejemplo local: "http://localhost:3000/pablo"
+// ⚙️ Cambia esta URL por tu backend en Vercel
+const API_URL = "https://TU_BACKEND_EN_VERCEL.vercel.app/";
 
-// 🔹 Cargar clientes al iniciar
-onMounted(async () => {
+// Función para obtener clientes
+const obtenerClientes = async () => {
+  loading.value = true;
+  error.value = "";
   try {
     const res = await fetch(API_URL);
     if (!res.ok) throw new Error("Error al obtener clientes");
@@ -63,21 +97,79 @@ onMounted(async () => {
   } finally {
     loading.value = false;
   }
+};
+
+// Función para registrar un cliente
+const registrarCliente = async () => {
+  try {
+    const res = await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(cliente.value)
+    });
+    if (!res.ok) throw new Error("Error al registrar cliente");
+    alert("✅ Cliente registrado con éxito");
+    cliente.value = { nombre: "", apellido: "", email: "", telefono: "" };
+    await obtenerClientes(); // actualiza la tabla automáticamente
+  } catch (err: any) {
+    alert(err.message);
+  }
+};
+
+// Cargar clientes al montar
+onMounted(() => {
+  obtenerClientes();
 });
 </script>
 
 <style scoped>
+.container {
+  max-width: 700px;
+  margin: auto;
+  padding: 2rem;
+  font-family: sans-serif;
+  background: #f9f9f9;
+  border-radius: 12px;
+  box-shadow: 0 0 8px #ccc;
+}
+.input-group {
+  margin-bottom: 1rem;
+}
+label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+input {
+  width: 100%;
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+button {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+button:hover {
+  background: #0056b3;
+}
 table {
   border-collapse: collapse;
-  width: 80%;
-  margin: 20px auto;
+  width: 100%;
+  margin-top: 20px;
 }
 th {
   background: #0077cc;
   color: white;
 }
-td,
-th {
+td, th {
   padding: 8px;
   text-align: left;
 }
