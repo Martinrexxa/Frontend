@@ -1,7 +1,12 @@
 <template>
   <div>
     <h2>📋 Lista de Clientes</h2>
-    <table border="1" cellpadding="8">
+
+    <!-- Mensaje de carga -->
+    <p v-if="loading">Cargando clientes...</p>
+    <p v-if="error" style="color:red">{{ error }}</p>
+
+    <table v-if="!loading && clientes.length" border="1" cellpadding="8">
       <thead>
         <tr>
           <th>ID</th>
@@ -21,13 +26,15 @@
         </tr>
       </tbody>
     </table>
+
+    <p v-else-if="!loading && !clientes.length">No hay clientes registrados.</p>
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, type PropType } from "vue"; // 👈 nota el "type" aquí
+<script setup lang="ts">
+import { ref, onMounted } from "vue";
 
-// 💡 Definición del tipo Cliente
+// 🔹 Interfaz de tipo Cliente
 interface Cliente {
   id_cliente: number;
   nombre: string;
@@ -36,14 +43,26 @@ interface Cliente {
   direccion: string;
 }
 
-export default defineComponent({
-  name: "ClienteList",
-  props: {
-    clientes: {
-      type: Array as PropType<Cliente[]>, // 👈 usa el tipo correctamente
-      required: true,
-    },
-  },
+// 🔹 Variables reactivas
+const clientes = ref<Cliente[]>([]);
+const loading = ref(true);
+const error = ref("");
+
+// 🔹 URL de tu backend (ajústala si estás en Vercel)
+const API_URL = "https://TU_BACKEND.vercel.app/pablo"; 
+// Ejemplo local: "http://localhost:3000/pablo"
+
+// 🔹 Cargar clientes al iniciar
+onMounted(async () => {
+  try {
+    const res = await fetch(API_URL);
+    if (!res.ok) throw new Error("Error al obtener clientes");
+    clientes.value = await res.json();
+  } catch (err: any) {
+    error.value = err.message;
+  } finally {
+    loading.value = false;
+  }
 });
 </script>
 
