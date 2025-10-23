@@ -83,7 +83,8 @@ const loading = ref(true);
 const error = ref("");
 
 // 🔗 URL del backend desplegado en Vercel
-const API_URL = "https://TU_BACKEND_EN_VERCEL.vercel.app/pablo";
+const API_URL = "https://backend-6eed.onrender.com/api/clientes";
+
 
 // Función para obtener clientes
 const obtenerClientes = async (): Promise<void> => {
