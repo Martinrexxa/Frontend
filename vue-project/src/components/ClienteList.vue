@@ -128,54 +128,180 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.container {
-  max-width: 700px;
-  margin: auto;
-  padding: 2rem;
-  font-family: sans-serif;
-  background: #f9f9f9;
-  border-radius: 12px;
-  box-shadow: 0 0 8px #ccc;
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+
+/* ===== CONTENEDOR PRINCIPAL ===== */
+.clientes-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #74ebd5, #9face6);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2.5rem 1rem;
+  font-family: 'Poppins', sans-serif;
 }
+
+/* ===== TARJETAS (FORMULARIO Y TABLA) ===== */
+.form-card,
+.tabla-card {
+  width: 100%;
+  max-width: 850px;
+  background: rgba(255, 255, 255, 0.18);
+  border-radius: 20px;
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  margin: 1.5rem 0;
+  padding: 2.5rem;
+  color: #fff;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.form-card:hover,
+.tabla-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+}
+
+/* ===== TÍTULOS ===== */
+.title {
+  text-align: center;
+  color: #ffffff;
+  text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.3);
+  margin-bottom: 2rem;
+  font-weight: 700;
+  font-size: 1.8rem;
+  letter-spacing: 0.5px;
+}
+
+/* ===== FORMULARIO ===== */
+.formulario {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
 .input-group {
-  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
 }
-label {
-  display: block;
-  margin-bottom: 5px;
-  font-weight: bold;
+
+.input-group label {
+  font-weight: 600;
+  margin-bottom: 0.4rem;
+  font-size: 0.95rem;
+  color: #ffffff;
 }
-input {
-  width: 100%;
-  padding: 8px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
+
+.input-group input {
+  padding: 10px 15px;
+  border-radius: 10px;
+  border: none;
+  background: rgba(255, 255, 255, 0.95);
+  font-size: 1rem;
+  color: #333;
+  transition: all 0.3s ease;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
 }
-button {
-  display: block;
-  width: 100%;
-  padding: 10px;
-  background: #007bff;
+
+.input-group input::placeholder {
+  color: #aaa;
+}
+
+.input-group input:focus {
+  background: #ffffff;
+  box-shadow: 0 0 6px #74ebd5, 0 0 6px #9face6;
+  outline: none;
+}
+
+/* ===== BOTÓN ===== */
+.btn-registrar {
+  grid-column: 1 / 3;
+  background: linear-gradient(90deg, #9face6, #74ebd5);
   color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: 10px;
+  padding: 14px;
+  font-size: 1.1rem;
   cursor: pointer;
-  margin-top: 10px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+  transition: all 0.3s ease;
 }
-button:hover {
-  background: #0056b3;
+
+.btn-registrar:hover {
+  background: linear-gradient(90deg, #74ebd5, #9face6);
+  transform: scale(1.03);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
 }
+
+/* ===== TABLA ===== */
+.table-scroll {
+  overflow-x: auto;
+  max-width: 100%;
+}
+
 table {
-  border-collapse: collapse;
   width: 100%;
-  margin-top: 20px;
+  min-width: 600px;
+  border-collapse: separate;
+  border-spacing: 0;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-top: 1.5rem;
+  box-shadow: 0 3px 15px rgba(0, 0, 0, 0.2);
+  background: rgba(255, 255, 255, 0.85);
+  color: #333;
 }
+
 th {
-  background: #0077cc;
+  background: linear-gradient(135deg, #74ebd5, #9face6);
   color: white;
+  text-transform: uppercase;
+  font-weight: 600;
+  font-size: 0.9rem;
 }
-td, th {
-  padding: 8px;
+
+td,
+th {
+  padding: 14px 15px;
   text-align: left;
+}
+
+tbody tr:nth-child(even) {
+  background: rgba(255, 255, 255, 0.6);
+}
+
+tbody tr:hover {
+  background: rgba(255, 255, 255, 0.95);
+  transition: 0.3s;
+}
+
+/* ===== MENSAJES ===== */
+.error {
+  color: #ff4d4d;
+  text-align: center;
+  font-weight: bold;
+  background: rgba(255, 0, 0, 0.1);
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.info {
+  text-align: center;
+  color: #f0f0f0;
+  font-style: italic;
+  font-weight: 300;
+}
+
+/* ===== RESPONSIVIDAD ===== */
+@media (max-width: 768px) {
+  .formulario {
+    grid-template-columns: 1fr;
+  }
+  .btn-registrar {
+    grid-column: 1 / 2;
+  }
 }
 </style>
